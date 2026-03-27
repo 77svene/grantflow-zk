@@ -1,0 +1,7 @@
+Just shipped GrantFlow: ZK-Verified Quadratic Grant Distribution for ETHGlobal HackMoney 2026 (Treasury/Governance Track)!
+
+Enables sybil-resistant treasury grants via zero-knowledge proofs of unique identity without compromising voter privacy or requiring KYC.
+
+https://github.com/77svene/grantflow-zk
+
+#hackathon #AI #Web3 #DeFi @lablabai

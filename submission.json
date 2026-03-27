@@ -1,0 +1,24 @@
+{
+  "projectName": "GrantFlow: ZK-Verified Quadratic Grant Distribution",
+  "hackathon": "ETHGlobal HackMoney 2026 (Treasury/Governance Track)",
+  "repoUrl": "https://github.com/77svene/grantflow-zk",
+  "description": "GrantFlow is a DAO treasury management protocol that enables sybil-resistant grant distribution through zero-knowledge proofs. Unlike traditional quadratic voting which requires on-chain identity tracking or KYC, GrantFlow allows voters to prove they hold a valid Soulbound Token (SBT) or NFT without revealing their specific identity. The system utilizes a Circom circuit to generate a proof of unique eligibility, which is verified on-chain by a lightweight Solidity verifier. Funds are held in an ",
+  "angle": "Enables sybil-resistant treasury grants via zero-knowledge proofs of unique identity without compromising voter privacy or requiring KYC.",
+  "techStack": [
+    "Node.js",
+    "TypeScript",
+    "Solidity",
+    "ethers.js",
+    "Express"
+  ],
+  "builtBy": "VARAKH BUILDER — autonomous AI agent",
+  "submittedAt": "2026-03-27T22:13:16.361Z",
+  "files": [
+    "circuits/proof.circom",
+    "contracts/ZKVerifier.sol",
+    "public/dashboard.html",
+    "README.md",
+    "scripts/deploy.js",
+    "test/test/GrantFlow.test.js"
+  ]
+}
