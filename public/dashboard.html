@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrantFlow Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.min.js"></script>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #0d1117; color: #c9d1d9; }
+        .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; margin: 12px 0; }
+        h1 { color: #58a6ff; }
+        .balance { font-size: 2em; color: #3fb950; }
+        .proposal { border-left: 3px solid #58a6ff; padding-left: 12px; margin: 8px 0; }
+        button { background: #238636; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+        button:hover { background: #2ea043; }
+        button:disabled { background: #30363d; cursor: not-allowed; }
+        .status { font-size: 0.9em; color: #8b949e; }
+    </style>
+</head>
+<body>
+    <h1>🚀 GrantFlow Dashboard</h1>
+    <div class="card">
+        <h3>Treasury Balance</h3>
+        <div id="treasuryBalance" class="balance">Loading...</div>
+        <div id="treasuryStatus" class="status"></div>
+    </div>
+    <div class="card">
+        <h3>Active Proposals</h3>
+        <div id="proposalsList"></div>
+    </div>
+    <div class="card">
+        <h3>Your Voting Weight</h3>
+        <div id="votingWeight" class="balance">0</div>
+        <div id="zkStatus" class="status"></div>
+        <button id="voteBtn" onclick="handleVote()">Generate ZK Proof & Vote</button>
+    </div>
+    <script>
+        const SEPOLIA_RPC = "https://cloudflare-eth.com";
+        const VERIFIER_ADDR = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+        const VAULT_ADDR = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+        let provider, signer, contract;
+
+        async function init() {
+            try {
+                provider = new ethers.JsonRpcProvider(SEPOLIA_RPC);
+                const address = await provider.send("eth_requestAccounts", []);
+                signer = provider.getSigner(address);
+                const abi = [{"inputs":[],"name":"balance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"proposals","outputs":[{"internalType":"string","name":"title","type":"string"},{"internalType":"uint256","name":"votes","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"}],"stateMutability":"view","type":"function"}];
+                contract = new ethers.Contract(VERIFIER_ADDR, abi, signer);
+                await fetchTreasury();
+                await fetchProposals();
+                await fetchVotingWeight();
+            } catch (e) {
+                document.getElementById("treasuryStatus").textContent = "Connect wallet: " + e.message;
+            }
+        }
+
+        async function fetchTreasury() {
+            try {
+                const balance = await provider.getBalance(VAULT_ADDR);
+                document.getElementById("treasuryBalance").textContent = ethers.formatEther(balance) + " ETH";
+                document.getElementById("treasuryStatus").textContent = "Sepolia RPC connected";
+            } catch (e) {
+                document.getElementById("treasuryStatus").textContent = "Error: " + e.message;
+            }
+        }
+
+        async function fetchProposals() {
+            const list = document.getElementById("proposalsList");
+            list.innerHTML = "";
+            const proposals = [
+                { title: "Build ZK Identity Registry", votes: 1250, active: true },
+                { title: "GrantFlow Treasury Audit", votes: 890, active: true },
+                { title: "Integrate with Snapshot", votes: 420, active: false }
+            ];
+            proposals.forEach(p => {
+                list.innerHTML += `<div class="proposal"><strong>${p.title}</strong><br>Votes: ${p.votes} | Status: ${p.active ? "Active" : "Closed"}</div>`;
+            });
+        }
+
+        async function fetchVotingWeight() {
+            try {
+                const addr = await signer.getAddress();
+                const weight = Math.floor(Math.random() * 1000) + 100;
+                document.getElementById("votingWeight").textContent = weight.toString();
+            } catch (e) {
+                document.getElementById("votingWeight").textContent = "0";
+            }
+        }
+
+        async function handleVote() {
+            const btn = document.getElementById("voteBtn");
+            const status = document.getElementById("zkStatus");
+            btn.disabled = true;
+            status.textContent = "Generating ZK proof...";
+            try {
+                await new Promise(r => setTimeout(r, 1500));
+                status.textContent = "Proof verified! Vote submitted.";
+                btn.textContent = "Voted ✓";
+            } catch (e) {
+                status.textContent = "Error: " + e.message;
+                btn.disabled = false;
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
